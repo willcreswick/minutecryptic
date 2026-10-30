@@ -221,9 +221,7 @@ function createCrypticClue({ answer, clue, index }) {
     };
 
     // Only show hint buttons for clue types actually present in the URI puzzle.
-    const clueTypes = new Set(
-        Array.isArray(clue) ? clue.map(part => part.type) : []
-    );
+    const clueTypes = [...clue.matchAll(/(?:^|\s)class="([^"]*)"/g)].map(match => match[1]);
 
     function setButtonVisible(button, visible) {
         button.hidden = !visible;
@@ -234,11 +232,11 @@ function createCrypticClue({ answer, clue, index }) {
     console.log("Clue: ", clue);
     console.log("Clue types:", clueTypes);
     
-    setButtonVisible(defBtn, clueTypes.has("def"));
-    setButtonVisible(def1Btn, clueTypes.has("def1"));
-    setButtonVisible(def2Btn, clueTypes.has("def2"));
-    setButtonVisible(fodderBtn, clueTypes.has("fodder"));
-    setButtonVisible(indBtn, clueTypes.has("ind"));
+    setButtonVisible(defBtn, clueTypes.includes("def"));
+    setButtonVisible(def1Btn, clueTypes.includes("def1"));
+    setButtonVisible(def2Btn, clueTypes.includes("def2"));
+    setButtonVisible(fodderBtn, clueTypes.includes("fodder"));
+    setButtonVisible(indBtn, clueTypes.includes("ind"));
     
     // Letter button is always available
     setButtonVisible(letBtn, true)
