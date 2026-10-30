@@ -231,6 +231,7 @@ function createCrypticClue({ answer, clue, index }) {
         button.classList.toggle("hidden", !visible);
     }
 
+    console.log("Clue: ", clue);
     console.log("Clue types:", clueTypes);
     
     setButtonVisible(defBtn, clueTypes.has("def"));
