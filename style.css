@@ -165,7 +165,7 @@ body {
   background: #fff;
 }
 
-.defBtn, .fodderBtn, .indBtn, .letBtn {
+.defBtn, .def1Btn, .def2Btn, .fodderBtn, .indBtn, .letBtn {
   font: italic 800 10px/1 "Georgia", "Times New Roman", serif;
   padding: 4px 10px;
   border-radius: 16px;
@@ -184,7 +184,7 @@ body {
   background: #f9a8d4;
 }
 
-.defBtn {
+.defBtn, .def1Btn, .def2Btn {
   background: #8adafd;
 }
 
