@@ -225,11 +225,20 @@ function createCrypticClue({ answer, clue, index }) {
         Array.isArray(clue) ? clue.map(part => part.type) : []
     );
 
-    defBtn.classList.toggle("hidden", !clueTypes.has("def"));
-    def1Btn.classList.toggle("hidden", !clueTypes.has("def1"));
-    def2Btn.classList.toggle("hidden", !clueTypes.has("def2"));
-    fodderBtn.classList.toggle("hidden", !clueTypes.has("fodder"));
-    indBtn.classList.toggle("hidden", !clueTypes.has("ind"));
+    function setButtonVisible(button, visible) {
+        button.hidden = !visible;
+        button.style.display = visible ? "" : "none";
+        button.classList.toggle("hidden", !visible);
+    }
+
+    setButtonVisible(defBtn, clueTypes.has("def"));
+    setButtonVisible(def1Btn, clueTypes.has("def1"));
+    setButtonVisible(def2Btn, clueTypes.has("def2"));
+    setButtonVisible(fodderBtn, clueTypes.has("fodder"));
+    setButtonVisible(indBtn, clueTypes.has("ind"));
+    
+    // Letter button is always available
+    setButtonVisible(letBtn, true)
 
     for(let i = 0; i < answer.length; i++) {
         answer[i] !== " " && hints.letters.push(i);
