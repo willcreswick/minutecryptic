@@ -101,6 +101,8 @@ function createCrypticClue({ answer, clue, index }) {
                 </div>
                 <div class="hintButtonRow hidden" style="width: 100%; gap: 10px;">
                     <button class="defBtn">Definition</button>
+                    <button class="def1Btn">Definition 1</button>
+                    <button class="def2Btn">Definition 2</button>
                     <button class="fodderBtn">Fodder</button>
                     <button class="indBtn">Indicators</button>
                     <button class="letBtn">Letter</button>
@@ -188,6 +190,8 @@ function createCrypticClue({ answer, clue, index }) {
     const checkBtn = root.querySelector(".checkBtn");
     const hintBtn = root.querySelector(".hintBtn");
     const defBtn = root.querySelector(".defBtn");
+    const def1Btn = root.querySelector(".def1Btn");
+    const def2Btn = root.querySelector(".def2Btn");
     const fodderBtn = root.querySelector(".fodderBtn");
     const indBtn = root.querySelector(".indBtn");
     const letBtn = root.querySelector(".letBtn");
@@ -209,10 +213,33 @@ function createCrypticClue({ answer, clue, index }) {
 
     let hints = {
         def: false,
+        def1: false,
+        def2: false,
         fodder: false,
         ind: false,
         letters: []
     };
+
+    // Only show hint buttons for clue types actually present in the URI puzzle.
+    const clueTypes = [...clue.matchAll(/(?:^|\s)class="([^"]*)"/g)].map(match => match[1]);
+
+    function setButtonVisible(button, visible) {
+        button.hidden = !visible;
+        button.style.display = visible ? "" : "none";
+        button.classList.toggle("hidden", !visible);
+    }
+
+    console.log("Clue: ", clue);
+    console.log("Clue types:", clueTypes);
+    
+    setButtonVisible(defBtn, clueTypes.includes("def"));
+    setButtonVisible(def1Btn, clueTypes.includes("def1"));
+    setButtonVisible(def2Btn, clueTypes.includes("def2"));
+    setButtonVisible(fodderBtn, clueTypes.includes("fodder"));
+    setButtonVisible(indBtn, clueTypes.includes("ind"));
+    
+    // Letter button is always available
+    setButtonVisible(letBtn, true)
 
     for(let i = 0; i < answer.length; i++) {
         answer[i] !== " " && hints.letters.push(i);
@@ -223,6 +250,8 @@ function createCrypticClue({ answer, clue, index }) {
     function getHints() {
         let a = 0;
         a += hints.def ? 1 : 0;
+        a += hints.def1 ? 1 : 0;
+        a += hints.def2 ? 1 : 0;
         a += hints.fodder ? 1 : 0;
         a += hints.ind ? 1 : 0;
         a += lettersStartingLength - hints.letters.length;
@@ -274,19 +303,35 @@ function createCrypticClue({ answer, clue, index }) {
         }
     })
 
-    defBtn.addEventListener("click", () => {
-        const defSpans = root.querySelectorAll(".def");
-        defSpans.forEach(span => span.style.textDecoration = "underline 3px #59cafa");
-        
-        const puzzleData = JSON.parse(atob(urlParams.get("puzzle").replace(/ /g, '+')));
-        if(puzzleData.hint && puzzleData.hint.def) {
-            sendHintBubble("the definition", puzzleData.hint.def, puzzleData.character);
-            hints.def = true;
-        }
-        defBtn.disabled = true;
+    function revealDefinition(type, button, label) {
+        const defSpans = root.querySelectorAll(`.${type}`);
+        defSpans.forEach(span =>
+            span.style.textDecoration = "underline 3px #59cafa"
+        );
 
+        const puzzleData = JSON.parse(atob(urlParams.get("puzzle").replace(/ /g, '+')));
+        const hintList = puzzleData.hint && puzzleData.hint[type];
+
+        if(hintList && hintList.length) {
+            sendHintBubble(label, hintList, puzzleData.character);
+            hints[type] = true;
+        }
+
+        button.disabled = true;
         updateHints();
-    });
+    }
+
+    defBtn.addEventListener("click", () =>
+        revealDefinition("def", defBtn, "the definition")
+    );
+
+    def1Btn.addEventListener("click", () =>
+        revealDefinition("def1", def1Btn, "definition 1")
+    );
+
+    def2Btn.addEventListener("click", () =>
+        revealDefinition("def2", def2Btn, "definition 2")
+    );
 
     fodderBtn.addEventListener("click", () => {
         const fodderSpans = root.querySelectorAll(".fodder");
